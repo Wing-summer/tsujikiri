@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "tsujikiri"
 description = "辻斬り Generic C++ Bindings Generator"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.10"
 authors = [
   { name = "kunitoki", email = "kunitoki@gmail.com" },
 ]
@@ -24,6 +24,8 @@ classifiers = [
   "Environment :: Console",
   "Intended Audience :: Developers",
   "Programming Language :: Python",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14"
@@ -86,7 +88,7 @@ conflicts = [
 ]
 
 [tool.mypy]
-python_version = "3.12"
+python_version = "3.10"
 strict = true
 warn_return_any = true
 warn_unused_ignores = true
@@ -103,7 +105,7 @@ docs = [
 [tool.ruff]
 include = ["src", "tests"]
 line-length = 120
-target-version = "py312"
+target-version = "py310"
 
 [tool.ruff.format]
 quote-style = "double"

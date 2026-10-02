@@ -149,7 +149,7 @@ Using uv:
 uv pip install tsujikiri
 ```
 
-**Requirements:** Python ≥ 3.12, `libclang-ng` ≥ 19 (Clang 19–22 supported).
+**Requirements:** Python ≥ 3.10, `libclang-ng` ≥ 19 (Clang 19–22 supported).
 
 To pin a specific Clang version use an extra:
 

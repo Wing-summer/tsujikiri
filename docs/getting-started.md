@@ -6,7 +6,7 @@
 
 ## Requirements
 
-- Python 3.12 or later
+- Python 3.10 or later
 - `libclang-ng` ≥ 19 (Python wrapper around libclang; supports Clang 19–22)
 
 ---
