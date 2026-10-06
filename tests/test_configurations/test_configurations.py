@@ -146,7 +146,7 @@ class TestOutputConfigLoading:
 
     def test_template_file_relative_path(self, tmp_path):
         tpl = tmp_path / "my.tpl"
-        tpl.write_text("TEMPLATE_CONTENT\n", encoding="utf-8")
+        tpl.write_text("TEMPLATE_CONTENT\n", encoding="utf-8", newline="")
         yml = tmp_path / "test.output.yml"
         yml.write_text("format_name: test\ntemplate_file: my.tpl\n", encoding="utf-8")
         cfg = load_output_config(yml)
@@ -154,7 +154,7 @@ class TestOutputConfigLoading:
 
     def test_template_file_absolute_path(self, tmp_path):
         tpl = tmp_path / "abs.tpl"
-        tpl.write_text("ABS_CONTENT\n", encoding="utf-8")
+        tpl.write_text("ABS_CONTENT\n", encoding="utf-8", newline="")
         yml = tmp_path / "test.output.yml"
         yml.write_text(f"format_name: test\ntemplate_file: {tpl}\n", encoding="utf-8")
         cfg = load_output_config(yml)
@@ -162,11 +162,29 @@ class TestOutputConfigLoading:
 
     def test_template_file_overrides_inline_template(self, tmp_path):
         tpl = tmp_path / "override.tpl"
-        tpl.write_text("FROM_FILE\n", encoding="utf-8")
+        tpl.write_text("FROM_FILE\n", encoding="utf-8", newline="")
         yml = tmp_path / "test.output.yml"
         yml.write_text("format_name: test\ntemplate: |\n  INLINE\ntemplate_file: override.tpl\n", encoding="utf-8")
         cfg = load_output_config(yml)
         assert cfg.template == "FROM_FILE\n"
+
+    def test_template_file_lf_newlines_preserved(self, tmp_path: Path) -> None:
+        (tmp_path / "lf.tpl").write_bytes(b"A\nB\n")
+        yml = tmp_path / "test.output.yml"
+        yml.write_text("format_name: test\ntemplate_file: lf.tpl\n", encoding="utf-8")
+        assert load_output_config(yml).template == "A\nB\n"
+
+    def test_template_file_crlf_newlines_preserved(self, tmp_path: Path) -> None:
+        (tmp_path / "crlf.tpl").write_bytes(b"A\r\nB\r\n")
+        yml = tmp_path / "test.output.yml"
+        yml.write_text("format_name: test\ntemplate_file: crlf.tpl\n", encoding="utf-8")
+        assert load_output_config(yml).template == "A\r\nB\r\n"
+
+    def test_template_file_mixed_newlines_preserved(self, tmp_path: Path) -> None:
+        (tmp_path / "mixed.tpl").write_bytes(b"A\r\nB\nC\rD")
+        yml = tmp_path / "test.output.yml"
+        yml.write_text("format_name: test\ntemplate_file: mixed.tpl\n", encoding="utf-8")
+        assert load_output_config(yml).template == "A\r\nB\nC\rD"
 
     def test_source_config_defaults(self):
         sc = SourceConfig(path="foo.hpp")
@@ -680,6 +698,26 @@ class TestFormatOverrideTemplateExtendsFile:
         )
         cfg = load_input_config(inp)
         assert cfg.format_overrides["luabridge3"].template_extends_file == "stored.tpl"
+
+    def test_template_extends_file_lf_newlines_preserved(self, tmp_path: Path) -> None:
+        (tmp_path / "lf.tpl").write_bytes(b"// A\n// B\n")
+        inp = tmp_path / "lf.input.yml"
+        inp.write_text(
+            "source:\n  path: x.h\nformat_overrides:\n  luabridge3:\n    template_extends_file: lf.tpl\n",
+            encoding="utf-8",
+        )
+        cfg = load_input_config(inp)
+        assert cfg.format_overrides["luabridge3"].template_extends == "// A\n// B\n"
+
+    def test_template_extends_file_crlf_newlines_preserved(self, tmp_path: Path) -> None:
+        (tmp_path / "crlf.tpl").write_bytes(b"// A\r\n// B\r\n")
+        inp = tmp_path / "crlf.input.yml"
+        inp.write_text(
+            "source:\n  path: x.h\nformat_overrides:\n  luabridge3:\n    template_extends_file: crlf.tpl\n",
+            encoding="utf-8",
+        )
+        cfg = load_input_config(inp)
+        assert cfg.format_overrides["luabridge3"].template_extends == "// A\r\n// B\r\n"
 
 
 class TestGetSourceEntries:
